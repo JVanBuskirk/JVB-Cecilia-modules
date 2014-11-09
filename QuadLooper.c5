@@ -1,0 +1,51 @@
+#What I need is loopers or sfplay with selector
+#Add help
+#Use pull down menu to select the number of delays
+#Spatial positioning
+#Use Randi for Delay modulation and then set modulation speed - maybe this is a different mod.
+#Can Delay8 Feedback into Delay1
+#Check Mix Channels
+#Add a resonator
+#change name to x8Delay and x8ResDelay
+
+
+class Module(BaseModule):
+    """
+    4 Loopers with pitch and loop control.
+    
+    """
+
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.snd1 = self.addFilein("snd1")
+        self.snd2 = self.addFilein("snd2")
+        self.snd3 = self.addFilein("snd3")
+        self.snd4 = self.addFilein("snd4")
+        self.looper1 = Looper(table = self.snd1, pitch=self.pitch1, start=0, dur=self.snd1.getDur()*self.range1, xfade=self.xfade1, mode=1, xfadeshape=0, mul=.25*self.vol1)
+        self.looper2 = Looper(table = self.snd2, pitch=self.pitch2, start=0, dur=self.snd2.getDur()*self.range2, xfade=self.xfade2, mode=1, xfadeshape=0, mul=.25*self.vol2)
+        self.looper3 = Looper(table = self.snd3, pitch=self.pitch3, start=0, dur=self.snd3.getDur()*self.range3, xfade=self.xfade3, mode=1, xfadeshape=0, mul=.25*self.vol3)
+        self.looper4 = Looper(table = self.snd4, pitch=self.pitch4, start=0, dur=self.snd4.getDur()*self.range4, xfade=self.xfade4, mode=1, xfadeshape=0, mul=.25*self.vol4)
+        self.out = self.looper1+self.looper2+self.looper3+self.looper4
+        
+Interface = [   cfilein(name="snd1", label="Audio 1"),
+                cfilein(name="snd2", label="Audio 2"),
+                cfilein(name="snd3", label="Audio 3"),
+                cfilein(name="snd4", label="Audio 4"),
+                cslider(name="pitch1", label="Pitch 1", min=0.01, max=4, init=1, rel="lin", unit="x", col="green1"),
+                cslider(name="range1", label="Loop End Point 1", min=0, max=1, init=1, rel="lin", unit="x", col="green2"),
+                cslider(name="vol1", label="Volume 1", min=0, max=1, init=1, rel="lin", unit="x", half=True, col="green3"),
+                cslider(name="xfade1", label="X Fade 1", min=0, max=50, init=2, rel="lin", unit="%", half=True, col="green4"),
+                cslider(name="pitch2", label="Pitch 2", min=0.01, max=4, init=1, rel="lin", unit="x", col="red1"),
+                cslider(name="range2", label="Loop End Point 2", min=0, max=1, init=1, rel="lin", unit="x", col="red2"),
+                cslider(name="vol2", label="Volume 2", min=0, max=1, init=1, rel="lin", unit="x", half=True, col="red3"),
+                cslider(name="xfade2", label="X Fade 2", min=0, max=50, init=2, rel="lin", unit="%", half=True, col="red4"),
+                cslider(name="pitch3", label="Pitch 3", min=0.01, max=4, init=1, rel="lin", unit="x", col="blue1"),
+                cslider(name="range3", label="Loop End Point 3", min=0, max=1, init=1, rel="lin", unit="x", col="blue2"),
+                cslider(name="vol3", label="Volume 3", min=0, max=1, init=1, rel="lin", unit="x", half=True, col="blue3"),
+                cslider(name="xfade3", label="X Fade 3", min=0, max=50, init=2, rel="lin", unit="%", half=True, col="blue4"),
+                cslider(name="pitch4", label="Pitch 4", min=0.01, max=4, init=1, rel="lin", unit="x", col="orange1"),
+                cslider(name="range4", label="Loop End Point 4", min=0, max=1, init=1, rel="lin", unit="x", col="orange2"),
+                cslider(name="vol4", label="Volume 4", min=0, max=1, init=1, rel="lin", unit="x", half=True, col="orange3"),
+                cslider(name="xfade4", label="X Fade 4", min=0, max=50, init=2, rel="lin", unit="%", half=True, col="orange4"),
+                cpoly()
+          ]

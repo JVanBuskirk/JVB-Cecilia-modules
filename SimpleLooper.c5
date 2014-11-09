@@ -1,0 +1,45 @@
+class Module(BaseModule):
+    """
+    Simple Looper - Jeremy Van Buskirk - jeremyvanb@yahoo.com v1 - 11/9/2014
+    
+    Sliders under the graph:
+    
+        - Speed : Speed of playback
+    
+    Dropdown menus, toggles and sliders on the bottom left:
+    
+        - Balance
+    
+    Graph only parameters :
+    
+        - Overall Amplitude : The amplitude curve applied on the total duration of the performance
+    """
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.snd = self.addFilein("snd")
+        freq = self.snd.getRate()
+        x = Phasor(freq*self.speed)
+        a = Pointer(self.snd, x)*self.env
+        self.osc = Sine(10000,mul=.1)
+        self.balanced = Balance(a, self.osc, freq=10)
+        self.out = Interp(a, self.balanced)
+
+        #INIT
+        self.balance(self.balance_index, self.balance_value)
+
+    def balance(self,index,value):
+       if index == 0:
+           self.out.interp  = 0
+       elif index ==1:
+          self.out.interp  = 1
+          self.balanced.input2 = self.osc
+       elif index == 2:
+          self.out.interp = 1
+          self.balanced.input2 = self.snd
+
+Interface = [   cfilein(name="snd"),
+                cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue"),
+                cslider(name="speed", label="Playback Speed", min=-4, max=4, init=1, rel="lin", unit="x", col="green"),
+                cpopup(name="balance", label = "Balance", init= "Off", col="blue", value=["Off","Compress", "Source"]),
+                cpoly()
+          ]

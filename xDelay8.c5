@@ -1,0 +1,51 @@
+#Use pull down menu to select the number of delays
+#Spatial positioning
+#Use Randi for Delay modulation and then set modulation speed - maybe this is a different mod.
+#Can Delay8 Feedback into Delay1
+#Check Mix Channels
+#Add a resonator
+#change name to x8Delay and x8ResDelay
+
+
+class Module(BaseModule):
+    """
+    8 Delays with cross-feedback
+    
+    """
+
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.snd = self.addSampler("snd")
+        self.delay1 = Delay(self.snd, self.del1, feedback=self.fb1, maxdelay=10)
+        self.delay2 = Delay(Mix([self.snd, (self.delay1*self.xfb2)]), self.del2, feedback=0, maxdelay=10)
+        self.delay3 = Delay(Mix([self.snd, (self.delay2*self.xfb3)]), self.del3, feedback=0, maxdelay=10)
+        self.delay4 = Delay(Mix([self.snd, (self.delay3*self.xfb4)]), self.del4, feedback=0, maxdelay=10)
+        self.delay5 = Delay(Mix([self.snd, (self.delay4*self.xfb5)]), self.del5, feedback=0, maxdelay=10)
+        self.delay6 = Delay(Mix([self.snd, (self.delay5*self.xfb6)]), self.del6, feedback=0, maxdelay=10)
+        self.delay7 = Delay(Mix([self.snd, (self.delay6*self.xfb7)]), self.del7, feedback=0, maxdelay=10)
+        self.delay8 = Delay(Mix([self.snd, (self.delay7*self.xfb8)]), self.del8, feedback=0, maxdelay=10)
+        self.toOuts = Mix([self.delay1, self.delay2, self.delay3, self.delay4, self.delay5, self.delay6, self.delay7, self.delay8], voices=2, mul=.1)
+        self.deg = Interp(self.snd*.2, self.toOuts, self.drywet, mul=self.env)
+        self.out = self.deg
+        
+Interface = [   csampler(name="snd", label="Audio"),
+                cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue"),
+                cslider(name="del1", label="Delay 1", min=0.0001, max=10, init=0.5, gliss=0.1, rel="lin", unit="sec", half=True, col="blue1"),
+                cslider(name="del2", label="Delay 2", min=0.0001, max=10, init=0.6, gliss=0.1, rel="lin", unit="sec", half=True, col="green1"),
+                cslider(name="del3", label="Delay 3", min=0.0001, max=10, init=0.7, gliss=0.1, rel="lin", unit="sec", half=True, col="blue2"),
+                cslider(name="del4", label="Delay 4", min=0.0001, max=10, init=0.8, gliss=0.1, rel="lin", unit="sec", half=True, col="green2"),
+                cslider(name="del5", label="Delay 5", min=0.0001, max=10, init=.9, gliss=0.1, rel="lin", unit="sec", half=True, col="blue3"),
+                cslider(name="del6", label="Delay 6", min=0.0001, max=10, init=1, gliss=0.1, rel="lin", unit="sec", half=True, col="green3"),
+                cslider(name="del7", label="Delay 7", min=0.0001, max=10, init=1.1, gliss=0.1, rel="lin", unit="sec", half=True, col="blue4"),
+                cslider(name="del8", label="Delay 8", min=0.0001, max=10, init=1.2, gliss=0.1, rel="lin", unit="sec", half=True, col="green4"),
+                cslider(name="fb1", label="feedback 1", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="red1"),
+                cslider(name="xfb2", label="X-feedback 2", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="red2"),
+                cslider(name="xfb3", label="X-feedback 3", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="orange1"),
+                cslider(name="xfb4", label="X-feedback 4", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="orange2"),
+                cslider(name="xfb5", label="X-feedback 5", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="red3"),
+                cslider(name="xfb6", label="X-feedback 6", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="orange3"),
+                cslider(name="xfb7", label="X-feedback 7", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="red4"),
+                cslider(name="xfb8", label="X-feedback 8", min=0, max=1, init=0.1, rel="lin", unit="x", half=True, col="orange4"),
+                cslider(name="drywet", label="Dry / Wet", min=0, max=1, init=.8, rel="lin", unit="x", col="blue1"),
+                cpoly()
+                ]
