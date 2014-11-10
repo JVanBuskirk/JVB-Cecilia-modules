@@ -18,8 +18,8 @@ class Module(BaseModule):
         BaseModule.__init__(self)
         self.snd = self.addFilein("snd")
         freq = self.snd.getRate()
-        x = Phasor(freq*self.speed)
-        a = Pointer(self.snd, x)*self.env
+        pos = Phasor(freq*self.speed)
+        a = Pointer2(self.snd, pos)*self.env
         self.osc = Sine(10000,mul=.1)
         self.balanced = Balance(a, self.osc, freq=10)
         self.out = Interp(a, self.balanced)
@@ -40,6 +40,5 @@ class Module(BaseModule):
 Interface = [   cfilein(name="snd"),
                 cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue"),
                 cslider(name="speed", label="Playback Speed", min=-4, max=4, init=1, rel="lin", unit="x", col="green"),
-                cpopup(name="balance", label = "Balance", init= "Off", col="blue", value=["Off","Compress", "Source"]),
-                cpoly()
+                cpopup(name="balance", label = "Balance", init= "Off", col="blue", value=["Off","Compress", "Source"])
           ]
