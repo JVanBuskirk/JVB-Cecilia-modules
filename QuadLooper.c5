@@ -1,12 +1,6 @@
-#What I need is loopers or sfplay with selector
+
 #Add help
-#Use pull down menu to select the number of delays
 #Spatial positioning
-#Use Randi for Delay modulation and then set modulation speed - maybe this is a different mod.
-#Can Delay8 Feedback into Delay1
-#Check Mix Channels
-#Add a resonator
-#change name to x8Delay and x8ResDelay
 
 
 class Module(BaseModule):

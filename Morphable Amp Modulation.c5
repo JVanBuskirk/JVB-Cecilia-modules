@@ -1,0 +1,62 @@
+class Module(BaseModule):
+    """
+    "Morphable Ampiltude Modulation"
+    
+    Description
+
+    Ampiltude Modulation where the modulator can morph between Sine, Saw, and Square Waves.
+    There is also a rhythmic accent generator.
+    
+    Sliders
+    
+        # Morph: 
+                Morphing between the modulator waves (Sine, Saw, Square) 
+        # Modulator Frequency: 
+                Frequency of the modulator oscillator
+        # Depth:
+                Depth of rhythmic accents
+
+    Graph Only
+    
+        # Overall Amplitude : 
+                The amplitude curve applied on the total duration of the performance
+    
+    Popups & Toggles
+    
+        # Polyphony Voices : 
+                Number of voices played simultaneously (polyphony), 
+                only available at initialization time
+        # Polyphony Chords : 
+                Pitch interval between voices (chords), 
+                only available at initialization time
+
+    """
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.snd = self.addSampler("snd")
+        self.expTable = ExpTable([(0, 0.3), (50, 1)], 3, True, 50)
+        self.index = RandInt(50, self.modFreq)
+        self.accTable = TableIndex(self.expTable, self.index) 
+        self.tab1 = HarmTable([1])
+        self.tab2 = HarmTable([1,.5,.33,.25,.2,.167,.143,.125,.111,.1,.091])
+        self.tab3 = HarmTable([1,0,.33,0,.2,0,.143,0,.111,0,.091])
+        self.tab4 = NewTable(length=8192./self.sr, chnls=1)
+        self.modTab = TableMorph(self.morph, self.tab4, [self.tab1,self.tab2,self.tab3])
+        self.accent = SigTo(self.accTable, 0.03)
+        self.modOsc = Osc(self.tab4, self.modFreq, 0.5, 1)
+        self.mod = Interp(self.modOsc, self.modOsc*self.accent, self.depth)
+        self.out = self.snd*self.mod*self.env
+        
+
+Interface = [
+    csampler(name="snd"),
+    cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue1"),
+    cslider(name="morph", label="Modulator Morph", min=0, max=1, init=0.5, 
+            rel="lin", unit="x", col="green1"),
+    cslider(name="modFreq", label="Modulator Freq.", min=0.1, max=18, init=8, rel="lin", 
+            unit="Hz", col="green2"),
+    cslider(name="depth", label="Accent Depth", min=0, max=1, init=1, 
+            rel="lin", unit="x", col="green3"),
+    cpoly()
+]
+

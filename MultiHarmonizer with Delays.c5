@@ -1,0 +1,71 @@
+class Module(BaseModule):
+    """
+    A harmonizer Bank with Variable Delay
+    
+    """
+    def __init__(self):
+        BaseModule.__init__(self)
+        self.snd = self.addSampler("snd")
+        self.trans1 = Harmonizer(self.snd, self.harm1, feedback=0, winsize=float(self.winsize_value))
+        self.trans2 = Harmonizer(self.snd, self.harm2, feedback=0, winsize=float(self.winsize_value))
+        self.trans3 = Harmonizer(self.snd, self.harm3, feedback=0, winsize=float(self.winsize_value))
+        self.trans4 = Harmonizer(self.snd, self.harm4, feedback=0, winsize=float(self.winsize_value))
+        self.delay1 = SmoothDelay(self.trans1, self.del1, self.fb1, maxdelay=5, mul=self.amp1)
+        self.delay2 = SmoothDelay(self.trans2, self.del2, self.fb2, maxdelay=5, mul=self.amp2)
+        self.delay3 = SmoothDelay(self.trans3, self.del3, self.fb3, maxdelay=5, mul=self.amp3)
+        self.delay4 = SmoothDelay(self.trans4, self.del4, self.fb4, maxdelay=5, mul=self.amp4)
+        self.transdel = self.delay1+self.delay2+self.delay3+self.delay4
+        self.drydel = Delay(self.snd, delay=float(self.winsize_value)*0.5)
+        self.out = Interp(self.drydel, self.transdel, self.drywet, self.env)
+
+    def winsize(self, index, value):
+        self.trans1.winsize = float(value)
+        self.trans2.winsize = float(value)
+        self.trans3.winsize = float(value)
+        self.trans4.winsize = float(value)
+        self.drydel.delay = float(value)*0.5
+
+    
+
+#Add wet/dry
+#Change slider layout and color
+Interface = [
+    csampler(name="snd"),
+    cgraph(name="env", label="Overall Amplitude", func=[(0,1),(1,1)], col="blue1"),
+    cslider(name='harm1', label='Harmonizer 1', min=-12.0, max=12.0, init=4, 
+            rel='lin', res='float', gliss=0.025, unit='semi', col='red2'),
+    cslider(name='del1', label='Delay 1', min=0, max=5.0, init=0.5, 
+            rel='lin', res='float', gliss=0.025, unit='sec.', col='red2'),
+    cslider(name='fb1', label='Feedback 1', min=0, max=1.0, init=0, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='red2', half=True
+            ),
+    cslider(name='amp1', label='Amp. 1', min=0, max=1.0, init=0.25, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='red2', half=True),
+    cslider(name='harm2', label='Harmonizer 2', min=-12.0, max=12.0, init=7, 
+            rel='lin', res='float', gliss=0.025, unit='semi', col='blue2'),
+    cslider(name='del2', label='Delay 2', min=0, max=5.0, init=0.8, 
+            rel='lin', res='float', gliss=0.025, unit='sec.', col='blue2'),
+    cslider(name='fb2', label='Feedback 2', min=0, max=1.0, init=0, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='blue2', half=True),
+    cslider(name='amp2', label='Amp. 2', min=0, max=1.0, init=0.25, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='blue2', half=True),
+    cslider(name='harm3', label='Harmonizer 3', min=-12.0, max=12.0, init=-3, 
+            rel='lin', res='float', gliss=0.025, unit='semi', col='green2'),
+    cslider(name='del3', label='Delay 3', min=0, max=5.0, init=1.1, 
+            rel='lin', res='float', gliss=0.025, unit='sec.', col='green2'),
+    cslider(name='fb3', label='Feedback 3', min=0, max=1.0, init=0, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='green2', half=True),
+    cslider(name='amp3', label='Amp. 3', min=0, max=1.0, init=0.25, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='green2', half=True),
+    cslider(name='harm4', label='Harmonizer 4', min=-12.0, max=12.0, init=-7, 
+            rel='lin', res='float', gliss=0.025, unit='semi', col='purple2'),
+    cslider(name='del4', label='Delay 4', min=0, max=5.0, init=1.4, 
+            rel='lin', res='float', gliss=0.025, unit='sec.', col='purple2'),
+    cslider(name='fb4', label='Feedback 4', min=0, max=1.0, init=0, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='purple2', half=True),
+    cslider(name='amp4', label='Amp. 4', min=0, max=1.0, init=0.25, 
+            rel='lin', res='float', gliss=0.025, unit='x', col='purple2', half=True),
+    cslider(name="drywet", label="Dry / Wet", min=0, max=1, init=0.5, rel="lin", unit="x", col="orange2"),
+    cpopup(name="winsize", label="Win Size", init="0.1", col="orange1", value=["0.025","0.05","0.1","0.15","0.2","0.25","0.5","0.75","1"]),
+    cpoly()
+]
